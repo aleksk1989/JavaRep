@@ -13,7 +13,7 @@ class WordCounterTest {
 
     private static WordCounter wc;
     private static WordCounter.Word word;
-    private static ParserProxy proxy;
+    private static PrinterProxy proxy;
 
     @BeforeAll
     public static void init() {

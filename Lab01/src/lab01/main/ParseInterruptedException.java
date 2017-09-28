@@ -1,5 +1,6 @@
 package lab01.main;
 
+
 class ParseInterruptedException extends InterruptedException {
 
     private String foundInfile;

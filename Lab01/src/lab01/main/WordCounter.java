@@ -12,32 +12,42 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-class WordCounter extends Parser {
+/**@class WordCounter - основной класс,
+ * содержащий логику парсера и подсчета
+ * количества появлений каждого слова
+ * в переданном файле
+ */
+public class WordCounter extends Parser {
 
     private static ArrayList<Word> words = new ArrayList<>();
     private BufferedReader reader;
 
-    private static volatile int threadCount;
-
+    /**@class Word - внутренний класс,
+     * который ассоциирует строковое значение
+     * слова с счетчиков этого значения
+     */
     class Word {
         private final String value;
         private int counter;
 
+        //word ctor
         public Word(String value) {
             this.value = value;
             counter = 1;
         }
 
+        //word getters
         public String getValue() {
             return value;
         }
 
-        public void incrementCounter() {
-            counter++;
-        }
-
         public int getCounter() {
             return counter;
+        }
+
+        //incrementor
+        public void incrementCounter() {
+            counter++;
         }
 
         @Override
@@ -47,30 +57,32 @@ class WordCounter extends Parser {
             Word word = (Word) o;
             return value != null ? value.equals(word.value) : word.value == null;
         }
+
         @Override
         public int hashCode() {
             return value != null ? value.hashCode() : 0;
         }
     }
 
+    //WordCounter getters
     public static ArrayList<Word> getWords() {
         return words;
     }
 
-    //class ctors
+    //WordCounter ctors
     public WordCounter(File file) throws FileNotFoundException {
         super(file);
         reader = new BufferedReader(this);
-        threadCount = ThreadsManager.getInstance().threadsSize();
     }
 
     public WordCounter(String fileName) throws FileNotFoundException {
         super(fileName);
         reader = new BufferedReader(this);
-        threadCount = ThreadsManager.getInstance().threadsSize();
     }
 
-    //start parsing
+    /**Запуск парсера через вызов
+     * метода parseFile {@see WordCounter#parseFile()}
+     */
     public void execute() {
         try {
             parseFile();
@@ -83,7 +95,11 @@ class WordCounter extends Parser {
         }
     }
 
-    //parse functions
+    /**@param line
+     * Парсинг строки. Метод разбивает строку
+     * на слова, складывает их в буфер и проверяет
+     * каждое слово на предмет вхождения в массив слов
+     */
     protected void parseLine(String line) {
 
         ArrayList<String> buffer = new ArrayList<>();
@@ -108,6 +124,12 @@ class WordCounter extends Parser {
         }
     }
 
+    /**Метод, осуществляющий построчный парсинг файла.
+     * Метод может выбрасывать исключение -
+     * @throws ParseInterruptedException,
+     * которое говорит о том, что в процессе парсинга
+     * встретились некорректные символы {@see WordCounter#lineIsValid(String line)}
+     */
     protected void parseFile() throws ParseInterruptedException {
         String line = "";
         try {
@@ -130,7 +152,11 @@ class WordCounter extends Parser {
         }
     }
 
-    //line validation func
+    /**@param line - строка для валидации
+     * @return - значение true или false
+     * Метод получает на входи строку
+     * и сравнивает с шаблоном.
+     */
     public boolean lineIsValid(String line) {
         Pattern pattern = Pattern.compile("[" + "а-яА-ЯёЁ" + "\\s" + "\\p{Punct}" + "]" + "*");
         Matcher matcher = pattern.matcher(line);
